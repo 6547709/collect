@@ -1,0 +1,4 @@
+snmp:
+  target: "172.18.1.133"
+  port: "161"
+  community: "ccssoft"
