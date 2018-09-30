@@ -1,4 +1,14 @@
 snmp:
-  target: "172.18.1.133"
+  oid:
+    cpu:
+      cpuCores: ".1.3.6.1.2.1.25.3.3.1.2"  # CPU的当前负载，N个核就有N个负载,用这个来统计cpu核心数 WALK
+      cpuIdle: ".1.3.6.1.4.1.2021.11.11.0"        # 空闲CPU百分比 GET
+    memory:
+      memTotal: ".1.3.6.1.4.1.2021.4.5.0"         # 内存总量 GET
+      memAvail: ".1.3.6.1.4.1.2021.4.11.0"        # 可用内存 GET
+    disk:
+      diskTotal: ".1.3.6.1.4.1.2021.9.1.6"        # 磁盘/分区的总大小（kBytes）WALK
+      diskPercent: ".1.3.6.1.4.1.2021.9.1.9"      # 磁盘使用空间百分比 WALK
+  target: "172.18.2.202"
   port: "161"
   community: "ccssoft"

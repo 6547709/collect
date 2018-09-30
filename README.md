@@ -29,6 +29,12 @@ yum install net-snmp net-snmp-utils net-snmp*
 # 配置
 vim /etc/snmp/snmpd.conf
 com2sec notConfigUser  default       ccssoft
+view    all           included   .1
+access  notConfigGroup ""      any       noauth    exact  all none none
+includeAllDisks
+rocommunity ccssoft
+disk /
+disk /home
 
 # 启动snmp服务
 systemctl enable snmpd
@@ -57,7 +63,7 @@ NET-SNMP version: 5.7.2
 # 查看一下安装的snmp软件包
 rpm -qa | grep net-snmp*
 
-snmpget -c ccssoft -v 2c paas-node3.m8.ccs .1.3.6.1.4.1.2021.11.9.0
+snmpget -c ccssoft -v 2c localhost .1.3.6.1.4.1.2021.11.9.0
 
 # snmpget 模拟snmp的GetRequest操作的工具。用来获取一个或几个管理信息。用来读取管理信息的内容。
 # 获取设备的描述信息
@@ -67,34 +73,21 @@ SNMPv2-MIB::sysDescr.0 = STRING: Linux paas-node1.m8.ccs 3.10.0-514.26.2.el7.x86
 Linux paas.m8.ccs 3.10.0-693.5.2.el7.x86_64 #1 SMP Fri Oct 20 20:32:50 UTC 2017 x86_64 x86_64 x86_64 GNU/Linux
 [root@paas ~]# 
 
-# uname -a 拆分
-## 硬件平台
-[root@paas ~]# uname -i
-x86_64
-[root@paas ~]# 
-## 机器硬件(CPU)名
-[root@paas ~]# uname -m
-x86_64
-[root@paas ~]# 
-## 节点名称
-[root@paas ~]# uname -n
-paas.m8.ccs
-[root@paas ~]# 
-## 操作系统
-[root@paas ~]# uname -o
-GNU/Linux
-[root@paas ~]# 
-## 系统处理器的体系结构
-[root@paas ~]# uname -p
-x86_64
-[root@paas ~]# 
-## 内核版本
-[root@paas ~]# uname -r
-3.10.0-693.5.2.el7.x86_64
-## 系统名
-[root@paas ~]# uname -s
-Linux
+# 获取磁盘信息
+[root@paas ~]# snmpdf -v2c -c ccssoft localhost
+
 ```
 
 #### snmp常用总结
 [SNMP监控一些常用OID的总结](https://www.cnblogs.com/aspx-net/p/3554044.html)
+
+#### snmpget与snmpwalk区别
+```markdown
+一、snmpwalk和snmpget的区别：
+
+snmpwalk是对OID值的遍历（比如某个OID值下面有N个节点，则依次遍历出这N个节点的值。如果对某个叶子节点的OID值做walk，则取得到数据就不正确了，因为它会认为该节点是某些节点的父节点，
+而对其进行遍历，而实际上该节点已经没有子节点了，那么它会取出与该叶子节点平级的下一个叶子节点的值，而不是当前请求的节子节点的值。）
+
+snmpget是取具体的OID的值。（适用于OID值是一个叶子节点的情况）
+
+```

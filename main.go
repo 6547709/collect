@@ -5,7 +5,7 @@ import (
 	"github.com/soniah/gosnmp"
 	"github.com/spf13/pflag"
 	"github.com/spf13/viper"
-	"go-snmp-example/config"
+	"go-snmp-collect-network-devices-information/config"
 	"log"
 	"os"
 	"time"
@@ -26,6 +26,12 @@ func main() {
 	snmpTarget := viper.GetString("snmp.target")
 	snmpPort := viper.GetInt("snmp.port")
 	snmpCommunity := viper.GetString("snmp.community")
+	cpuCores:=viper.GetString("snmp.oid.cpu.cpuCores")
+	cpuIdle:=viper.GetString("snmp.oid.cpu.cpuIdle")
+	memTotal:=viper.GetString("snmp.oid.memory.memTotal")
+	memAvail:=viper.GetString("snmp.oid.memory.memAvail")
+	diskTotal:=viper.GetString("snmp.oid.disk.diskTotal")
+	diskPercent:=viper.GetString("snmp.oid.disk.diskPercent")
 
 	// 构建GoSNMP结构体
 	// 详细记录数据包
@@ -43,18 +49,18 @@ func main() {
 	}
 	defer params.Conn.Close()
 
-	// 1.3.6.1.4.1.2021.11.11.0(空闲cpu百分比,ssCpuIdle,GET)
-	// 1.3.6.1.4.1.2021.4.5.0(机器总内存单位是字节,memTotalReal,GET)
-	oids := []string{"1.3.6.1.4.1.2021.11.11.0", "1.3.6.1.4.1.2021.4.5.0"}
-	result, err2 := params.Get(oids) // Get() accepts up to g.MAX_OIDS
+	oids := []string{cpuIdle,memTotal,memAvail,diskTotal,diskPercent}
+	resultGet, err2 := params.Get(oids) // Get() accepts up to g.MAX_OIDS
+	resultWalk,err2:= params.Walk(cpuCores)
 	if err2 != nil {
 		log.Fatalf("Get() err: %v", err2)
 	}
 
-	for i, variable := range result.Variables {
+	for i, variable := range resultGet.Variables {
 		fmt.Printf("%d: oid: %s ", i, variable.Name)
 
 		switch variable.Type {
+		// if value is zero,
 		case gosnmp.OctetString:
 			fmt.Printf("string: %s\n", string(variable.Value.([]byte)))
 		default:
