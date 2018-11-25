@@ -2,13 +2,14 @@ package main
 
 import (
 	"fmt"
-	"github.com/soniah/gosnmp"
-	"github.com/spf13/pflag"
-	"github.com/spf13/viper"
-	"go-snmp-collect-network-devices-information/config"
 	"log"
 	"os"
 	"time"
+
+	"github.com/fenggolang/collect/config"
+	"github.com/soniah/gosnmp"
+	"github.com/spf13/pflag"
+	"github.com/spf13/viper"
 )
 
 var (
@@ -26,12 +27,12 @@ func main() {
 	snmpTarget := viper.GetString("snmp.target")
 	snmpPort := viper.GetInt("snmp.port")
 	snmpCommunity := viper.GetString("snmp.community")
-	cpuCores:=viper.GetString("snmp.oid.cpu.cpuCores")
-	cpuIdle:=viper.GetString("snmp.oid.cpu.cpuIdle")
-	memTotal:=viper.GetString("snmp.oid.memory.memTotal")
-	memAvail:=viper.GetString("snmp.oid.memory.memAvail")
-	diskTotal:=viper.GetString("snmp.oid.disk.diskTotal")
-	diskPercent:=viper.GetString("snmp.oid.disk.diskPercent")
+	//cpuCores := viper.GetString("snmp.oid.cpu.cpuCores")
+	cpuIdle := viper.GetString("snmp.oid.cpu.cpuIdle")
+	memTotal := viper.GetString("snmp.oid.memory.memTotal")
+	memAvail := viper.GetString("snmp.oid.memory.memAvail")
+	diskTotal := viper.GetString("snmp.oid.disk.diskTotal")
+	diskPercent := viper.GetString("snmp.oid.disk.diskPercent")
 
 	// 构建GoSNMP结构体
 	// 详细记录数据包
@@ -49,9 +50,9 @@ func main() {
 	}
 	defer params.Conn.Close()
 
-	oids := []string{cpuIdle,memTotal,memAvail,diskTotal,diskPercent}
+	oids := []string{cpuIdle, memTotal, memAvail, diskTotal, diskPercent}
 	resultGet, err2 := params.Get(oids) // Get() accepts up to g.MAX_OIDS
-	resultWalk,err2:= params.Walk(cpuCores)
+	//resultWalk, err2 := params.Walk(cpuCores)
 	if err2 != nil {
 		log.Fatalf("Get() err: %v", err2)
 	}

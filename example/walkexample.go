@@ -27,6 +27,11 @@ func main() {
 	var community string
 	flag.StringVar(&community, "community", "ccssoft", "the community string for device")
 
+	var host string
+	//var oid string
+	flag.StringVar(&host, "host", "172.17.12.79", "the host string for device")
+	//flag.StringVar(&oid, "oid", "172.17.12.79", "the oid string for device")
+
 	flag.Parse()
 
 	if len(flag.Args()) < 1 {

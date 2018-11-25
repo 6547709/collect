@@ -24,7 +24,7 @@ SMI：Structure of Management Information(管理信息结构)，SMI定义了SNMP
 #### 安装snmp
 ```bash
 # 安装
-yum install net-snmp net-snmp-utils net-snmp*
+yum install net-snmp net-snmp-utils net-snmp* -y
 
 # 配置
 vim /etc/snmp/snmpd.conf
@@ -51,6 +51,14 @@ iptables -D INPUT -p udp -m state --state NEW -m udp --dport 161  -j ACCEPT
 iptables -I INPUT -p tcp -m state --state NEW -m tcp --dport 161  -j ACCEPT
 iptables -I INPUT -p udp -m state --state NEW -m udp --dport 161  -j ACCEPT
 
+# 如果是firewalld则如下方式添加
+firewall-cmd --zone=public --add-port=161/tcp --permanent
+firewall-cmd --zone=public --add-port=161/udp --permanent
+firewall-cmd --reload
+systemctl restart snmpd
+
+# 查看所有开放的端口
+firewall-cmd --zone=public --list-ports
 ```
 
 #### 使用snmp
